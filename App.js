@@ -32,7 +32,7 @@ export default function App() {
     async function getData(url){
       const response = await fetch(url);
       var ingredients = await response.json();
-      console.log(ingredients);
+      console.log(ingredients.product.ingredients_text)
     }
   
     getData(api_url)
