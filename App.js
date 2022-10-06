@@ -7,7 +7,11 @@ import * as cheerio from 'cheerio';
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const [text, setText] = useState('Not yet scanned');
+  const [text, setText] = useState('N/A');
+  const [text2, setText2] = useState('');
+  const [text3, setText3] = useState('N/A');
+
+
 
   const askForCameraPermission = () => {
     (async () => {
@@ -33,10 +37,11 @@ export default function App() {
       const response = await fetch(url);
       var ingredients = await response.json();
       console.log(ingredients.product.ingredients_text)
+      setText(ingredients.product.ingredients_text)
+      setText2(ingredients.product.product_name_en_imported)
+      setText3(ingredients.product.nutriscore_grade)
     }
-  
     getData(api_url)
-
   };
 
 
@@ -58,8 +63,6 @@ export default function App() {
       )
   }
 
-
-
   // Return the View
   return (
     <View style={styles.container}>
@@ -68,9 +71,11 @@ export default function App() {
           onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
           style={{ height: 600, width: 400 }} />
       </View>
-      <Text style={styles.maintext}>{"Barcode: " + text}</Text>
+      <Text>{text2}</Text>
+      <Text style={styles.maintext}>{"Ingredients: " + text}</Text>
+      <Text style={styles.text3}>{"Nutriscore: " + text3.toUpperCase() + " (A-E)"}</Text>  
 
-      {scanned && <Button title={'Scan Again'} onPress={() => setScanned(false)} color='tomato' />}
+      {scanned && <Button title={'Scan Again'} onPress={() => setScanned(false)} color='black' />}
     </View>
   );
 }
@@ -99,5 +104,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: 30,
     backgroundColor: 'tomato'
+  },
+  text3: {
+    textAlign: 'left',
+    fontSize: 16,
+    margin: 20,
   }
 });
