@@ -10,6 +10,7 @@ export default function App() {
   const [text, setText] = useState('N/A');
   const [text2, setText2] = useState('');
   const [text3, setText3] = useState('N/A');
+  const none = "none";
 
 
 
@@ -39,12 +40,10 @@ export default function App() {
       console.log(ingredients.product.ingredients_text)
       setText(ingredients.product.ingredients_text)
       setText2(ingredients.product.product_name_en_imported)
-      setText3(ingredients.product.nutriscore_grade)
+      setText3(ingredients.product.nutriscore_grade.toUpperCase())
     }
     getData(api_url)
   };
-
-
 
   // Check permissions and return the screens
   if (hasPermission === null) {
@@ -73,7 +72,7 @@ export default function App() {
       </View>
       <Text>{text2}</Text>
       <Text style={styles.maintext}>{"Ingredients: " + text}</Text>
-      <Text style={styles.text3}>{"Nutriscore: " + text3.toUpperCase() + " (A-E)"}</Text>  
+      <Text style={styles.text3}>{"Nutriscore: " + text3 + " (A-E)"}</Text>  
 
       {scanned && <Button title={'Scan Again'} onPress={() => setScanned(false)} color='black' />}
     </View>
