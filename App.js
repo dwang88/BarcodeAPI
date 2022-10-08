@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import { Text, View, StyleSheet, Button, ScrollView, Image } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import * as cheerio from 'cheerio';
+import Card from './styles/card';
+import { globalStyles } from './styles/global';
+
 
 
 
@@ -40,11 +43,13 @@ export default function App() {
     async function getData(url){
       const response = await fetch(url);
       var ingredients = await response.json();
-      const pre_filter = ingredients.product.ingredients_text.replace(/\./g, '');
+      const pre_filter = ingredients.product.ingredients_text.toLowerCase().replace(/\./g, '');
       const filter = pre_filter.split(", ");
-      const mesh = ["red 40", "soy lecithin", "red#40"];
-      console.log(ingredients.product.ingredients_text);
+
+      const mesh = ["red 40", "soy lecithin", "red#40", "natural flavors", "natural and artificial flavors", "caramel color", "fully hydrogenated vegetable oils", "aluminum", "palm oil", "corn syrup", "fructose", "glucose", "yellow 5", "yellow 6", "blue 1", "concentrate", "xanthan gum", "lecithin", "artificial" ];
+      var filtered = [];
       setText(ingredients.product.ingredients_text);
+      setText(pre_filter);
       setText2(ingredients.product.product_name_en_imported);
       setText3(ingredients.product.nutriscore_grade.toUpperCase());
 
@@ -54,14 +59,17 @@ export default function App() {
 
       for(let i = 0; i < filter.length; i++) {
         for(let j = 0; j < mesh.length; j++) {
-            if(filter[i] === mesh[j]) {
-                setText4(filter[i]);
-                console.log(filter[i]);
+            if(filter[i].includes(mesh[j])) {
+              filtered.push(filter[i]);
+            }
+            else {
+              filtered.push()
             }
         }
     }
+    setText4(filtered);
     }
-    getData(api_url)
+    getData(api_url);
   };
 
 
@@ -84,18 +92,27 @@ export default function App() {
 
   // Return the View
   return (
-    <View style={styles.container}>
+    <ScrollView>
+    <View style={{flexDirection: "column", padding: 10}}>
       <View style={styles.barcodebox}>
         <BarCodeScanner
           onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-          style={{ height: 600, width: 400 }} />
+          style={{ height: 600, width: 400 }} 
+          />
       </View>
-      <Text>{text2}</Text>
-      <Text style={styles.maintext}>{"Ingredients: " + text}</Text>
-      <Text style={styles.text3}>{"Nutriscore: " + text3 + " (A-E)"}</Text>  
-      <Text>{text4}</Text>
+      <Text style={{textAlign: 'center'}}>{text2}</Text>
+      <Card>
+        <Text style={styles.maintext}>{"Ingredients: " + text}</Text>
+        </Card>
+      <Card>
+        <Text style={styles.text3}>{"Nutriscore: " + text3 + " (A-E)"}</Text>
+      </Card>  
+      <Card>
+        <Text>{"Hazards: " + text4}</Text>
+      </Card>
       {scanned && <Button title={'Scan Again'} onPress={() => setScanned(false)} color='black' />}
     </View>
+    </ScrollView>
   );
 }
 
@@ -118,8 +135,8 @@ const styles = StyleSheet.create({
   barcodebox: {
     alignItems: 'center',
     justifyContent: 'center',
-    height: 300,
-    width: 300,
+    height: 200,
+    alignSelf: 'stretch',
     overflow: 'hidden',
     borderRadius: 30,
     backgroundColor: 'tomato'
