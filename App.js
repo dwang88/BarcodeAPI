@@ -4,13 +4,16 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import * as cheerio from 'cheerio';
 
 
+
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [text, setText] = useState('N/A');
   const [text2, setText2] = useState('');
   const [text3, setText3] = useState('N/A');
-  const none = "none";
+  const [text4, setText4] = useState('N/A');
+
+
 
 
 
@@ -30,20 +33,37 @@ export default function App() {
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
     setText(data)
-    console.log('Type: ' + type + '\nData: ' + data)
+    //console.log('Type: ' + type + '\nData: ' + data)
 
     const api_url = `https://world.openfoodfacts.org/api/v0/product/${data}.json`;
 
     async function getData(url){
       const response = await fetch(url);
       var ingredients = await response.json();
-      console.log(ingredients.product.ingredients_text)
-      setText(ingredients.product.ingredients_text)
-      setText2(ingredients.product.product_name_en_imported)
-      setText3(ingredients.product.nutriscore_grade.toUpperCase())
+      const pre_filter = ingredients.product.ingredients_text.replace(/\./g, '');
+      const filter = pre_filter.split(", ");
+      const mesh = ["red 40", "soy lecithin", "red#40"];
+      console.log(ingredients.product.ingredients_text);
+      setText(ingredients.product.ingredients_text);
+      setText2(ingredients.product.product_name_en_imported);
+      setText3(ingredients.product.nutriscore_grade.toUpperCase());
+
+
+      console.log("Pre: " + pre_filter);
+      console.log(filter);
+
+      for(let i = 0; i < filter.length; i++) {
+        for(let j = 0; j < mesh.length; j++) {
+            if(filter[i] === mesh[j]) {
+                setText4(filter[i]);
+                console.log(filter[i]);
+            }
+        }
+    }
     }
     getData(api_url)
   };
+
 
   // Check permissions and return the screens
   if (hasPermission === null) {
@@ -73,7 +93,7 @@ export default function App() {
       <Text>{text2}</Text>
       <Text style={styles.maintext}>{"Ingredients: " + text}</Text>
       <Text style={styles.text3}>{"Nutriscore: " + text3 + " (A-E)"}</Text>  
-
+      <Text>{text4}</Text>
       {scanned && <Button title={'Scan Again'} onPress={() => setScanned(false)} color='black' />}
     </View>
   );
