@@ -1,6 +1,7 @@
 import create from 'zustand';
 
-export const useSearchStore = create((set) => ({
+export const useSearchStore = create(() => ({
   search: '',
-  clear: () => set({search: ''}),
+  nutriFilter: true,
+  ecoFilter: true,
 }));
